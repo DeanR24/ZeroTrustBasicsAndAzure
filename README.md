@@ -90,13 +90,13 @@ This is a simplified view, not a literal network traffic flow. Conditional Acces
 
 | Step | What I'm setting up | Guide |
 |---|---|---|
-| 1 | Test tenant, users, licensing, and admin recovery | [Prerequisites](02-azure/01-prerequisites-and-licensing.md) |
-| 2 | MFA and basic identity protection | [Build guide](02-azure/03-build-guide.md) |
-| 3 | Conditional Access with report-only testing | [Lab 01](labs/lab-01-conditional-access-mfa.md) |
-| 4 | Device compliance with Intune | [Lab 02](labs/lab-02-device-compliance.md) |
-| 5 | Least-privilege permissions using Azure RBAC | [Lab 03](labs/lab-03-least-privilege.md) |
-| 6 | VNet restrictions, Private Endpoint, and DNS | [Lab 04](labs/lab-04-private-endpoint.md) |
-| 7 | Logs, KQL queries, and security monitoring | [Lab 05](labs/lab-05-logging-and-hunting.md) |
+| 1 | Test tenant, users, licensing, and admin recovery 
+| 2 | MFA and basic identity protection 
+| 3 | Conditional Access with report-only testing 
+| 4 | Device compliance with Intune 
+| 5 | Least-privilege permissions using Azure RBAC 
+| 6 | VNet restrictions, Private Endpoint, and DNS 
+| 7 | Logs, KQL queries, and security monitoring 
 
 ### Azure study notes
 
