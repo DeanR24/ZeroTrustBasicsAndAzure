@@ -1,7 +1,5 @@
 # ZeroTrustArchetecture
 
-> **Learn Zero Trust from the ground up, then build a practical Zero Trust lab in Microsoft Azure.**
-
 ![Topics](https://img.shields.io/badge/Topics-Zero%20Trust%20%7C%20Azure%20%7C%20Entra%20ID-2563eb)
 ![Level](https://img.shields.io/badge/Level-Beginner%20to%20Intermediate-16a34a)
 ![Type](https://img.shields.io/badge/Type-Learning%20Notes%20%2B%20Hands--On%20Labs-64748b)
