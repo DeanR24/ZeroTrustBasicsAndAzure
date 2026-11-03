@@ -108,27 +108,6 @@ This is a simplified view, not a literal network traffic flow. Conditional Acces
 - [Testing and rollback](02-azure/05-validation-and-rollback.md)
 - [KQL examples](02-azure/06-kql-examples.md)
 
-## Labs
-
-These labs are meant for a test tenant or a small pilot group, not for turning on new policies across a production tenant without testing.
-
-1. [Conditional Access and MFA](labs/lab-01-conditional-access-mfa.md)
-2. [Intune device compliance](labs/lab-02-device-compliance.md)
-3. [Azure RBAC and least privilege](labs/lab-03-least-privilege.md)
-4. [Private Endpoint and DNS](labs/lab-04-private-endpoint.md)
-5. [Logs and KQL hunting](labs/lab-05-logging-and-hunting.md)
-
-## What I want to understand by the end
-
-- Explain Zero Trust without treating it as just MFA or a VPN.
-- Understand the NIST, Microsoft, and CISA models.
-- Build and test a Conditional Access policy without locking out administrators.
-- Understand the difference between authentication, authorization, and network access.
-- Check device compliance and see how it affects access.
-- Assign narrowly scoped roles in Azure.
-- Set up and troubleshoot Private Endpoint connectivity and DNS.
-- Use Entra sign-in logs, Azure logs, and KQL to validate the controls.
-
 I'll use the [implementation checklist](templates/implementation-checklist.md) and [learning journal](templates/learning-journal.md) to track what I've tested and what still needs work.
 
 ## Things to watch out for
@@ -141,7 +120,6 @@ I'll use the [implementation checklist](templates/implementation-checklist.md) a
 
 ## References
 
-- [Microsoft and NIST references](docs/references.md)
-- [Glossary](docs/glossary.md)
+- 
+- 
 
-This is a working set of study notes. I'll keep updating it as I test the labs and learn more.
