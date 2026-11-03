@@ -2,127 +2,146 @@
 
 ![Topics](https://img.shields.io/badge/Topics-Zero%20Trust%20%7C%20Azure%20%7C%20Entra%20ID-2563eb)
 
-This repository is my structured learning notebook for Zero Trust architecture. It explains the **why** in plain English first, then the **how** using Microsoft Entra ID, Microsoft Intune, Azure infrastructure, Microsoft Defender, and Microsoft Sentinel.
+These are my notes on Zero Trust and how to set it up in Microsoft Azure. I'm starting with the basics, then working through the Microsoft services, configuration, and testing needed to put it into practice.
 
-**Important:** Zero Trust is an architecture and operational strategy—not a product, a VPN, or an MFA checkbox. This repo teaches a gradual implementation, not an instant certification of "Zero Trust compliant."
+The goal is to understand what each control does, why it matters, and how the pieces work together. Zero Trust isn't a product you install or a setting you switch on.
 
-## 📖 Part 1 — Zero Trust explained simply
+## Part 1: Understanding Zero Trust
 
-**One-sentence definition:** Never grant access *just because* a user, device, or workload is on a trusted network. Evaluate each request using identity, device, policy, and context, grant only the needed access, and keep monitoring.
+### What is Zero Trust?
 
-Think of a building:
+Zero Trust means you don't automatically trust someone just because they're connected to your company network or signed in before. Access decisions should consider who they are, what device they're using, what they're trying to access, and whether the request looks legitimate.
 
-- **Old model:** Pass the front door check, then walk freely inside.
-- **Zero Trust model:** Verify who you are, what room you need, whether your badge/device is safe, and whether the request makes sense. Only that specific room is accessible.
+A simple way to think about it:
 
-### The three core principles
+- **Traditional security:** Once you're inside the network, you may have access to more than you need.
+- **Zero Trust:** Every request is checked against policy, and access is limited to what is actually needed.
 
-| Principle | Plain English | Example |
+Zero Trust doesn't mean asking someone to enter their password every few minutes. It means using the right signals and controls to make better access decisions.
+
+### The three main principles
+
+| Principle | What it means | Example |
 |---|---|---|
-| **Verify explicitly** | Check more than a password. | User + phishing-resistant MFA + device signals + app context. |
-| **Use least privilege** | Give only what is needed, for as long as needed. | Analyst can view security logs but cannot modify cloud networking. |
-| **Assume breach** | Design as though one identity/device may be compromised. | Segment networks, limit lateral movement, log and detect suspicious activity. |
+| **Verify explicitly** | Check identity and other relevant signals before granting access. | Require MFA and evaluate device compliance when accessing a sensitive application. |
+| **Use least privilege** | Give users and services only the permissions they need. | Give an analyst read access to logs instead of broad Azure Contributor access. |
+| **Assume breach** | Plan for an account, endpoint, or workload to be compromised. | Separate systems, restrict access between them, and monitor activity. |
 
-### Simple access-decision model
+### Basic access model
 
 ```mermaid
 flowchart LR
-    A[User or workload] --> B{Policy checks}
-    C[Identity & MFA] --> B
-    D[Device health] --> B
-    E[Context & risk] --> B
-    B -->|Allowed and scoped| F[Specific application or resource]
-    B -->|Denied or more verification| G[Block / Step up]
-    F --> H[Log and continuously assess]
+    A[User or workload] --> B{Access policy}
+    C[Identity and MFA] --> B
+    D[Device status] --> B
+    E[Risk and context] --> B
+    B -->|Meets requirements| F[Application or resource]
+    B -->|Does not meet requirements| G[Block or require another check]
+    F --> H[Logging and monitoring]
 ```
 
-**Read Part 1 in order:**
+### Part 1 notes
 
-1. [What is Zero Trust?](01-fundamentals/01-what-is-zero-trust.md) — beginner-friendly examples and myths.
-2. [Principles and pillars](01-fundamentals/02-principles-and-pillars.md) — Microsoft, NIST, and CISA models.
-3. [Architecture models](01-fundamentals/03-models-and-diagrams.md) — traditional vs Zero Trust, policy engine and enforcement, example diagrams.
-4. [Self-test](01-fundamentals/04-knowledge-check.md) — check your understanding.
+1. [What is Zero Trust?](01-fundamentals/01-what-is-zero-trust.md)
+2. [Principles and pillars](01-fundamentals/02-principles-and-pillars.md)
+3. [Architecture models and diagrams](01-fundamentals/03-models-and-diagrams.md)
+4. [Knowledge check](01-fundamentals/04-knowledge-check.md)
 
----
+These cover the Microsoft principles, NIST SP 800-207, and the CISA Zero Trust Maturity Model.
 
-## ☁️ Part 2 — Build Zero Trust in Microsoft Azure
+## Part 2: Building Zero Trust in Azure
 
-You do **not** need every Microsoft security product on day one. The baseline is identity protection and least privilege; add device controls, network isolation, and monitoring as your lab grows.
+For the Azure side, I'm starting with identity security and permissions. From there, I'll add device compliance, network restrictions, and monitoring. Not every service is required for every environment, and some features need additional licenses.
 
-### What you will build
+### How the Azure pieces fit together
 
 ```mermaid
 flowchart TB
-    U[User] --> CA[Microsoft Entra ID\nAuthentication & Conditional Access]
-    DV[Device posture\nIntune optional] --> CA
-    CA -->|Session allowed| APP[Protected app or Azure service]
-    RBAC[Azure RBAC / PIM optional] -->|Authorizes resource actions| APP
-    APP --> VNET[Virtual Network + NSGs]
-    VNET --> PE[Private Endpoint optional]
+    U[User] --> CA[Entra ID authentication and Conditional Access]
+    D[Intune device compliance] --> CA
+    CA -->|Sign-in meets policy| APP[Protected app or service]
+    RBAC[Azure RBAC and optional PIM] -->|Controls permissions| APP
+    APP --> NET[Azure network controls]
+    NET --> PE[Optional private endpoint]
     PE --> DATA[Storage or Key Vault]
-    CA -. sign-in & audit signals .-> LA[Log Analytics]
-    APP -. resource logs .-> LA
-    LA --> S[Microsoft Sentinel optional]
+    CA -.-> LOG[Log Analytics]
+    APP -.-> LOG
+    LOG --> SIEM[Optional Microsoft Sentinel]
 ```
 
-> **Conceptual diagram:** Entra Conditional Access gates supported sign-ins; Azure RBAC separately authorizes Azure management or data operations. A VNet/private endpoint controls *network reachability*, not user authorization. This diagram is not a literal single-packet route.
+This is a simplified view, not a literal network traffic flow. Conditional Access evaluates supported sign-ins, Azure RBAC controls permissions, and private endpoints restrict network reachability. Each solves a different problem.
 
-### Azure build path
+### Services to know
 
-| Stage | Goal | Main service | Guide |
-|---|---|---|---|
-| 0 | Set up a safe test environment | Azure subscription, Entra tenant | [Prerequisites & licensing](02-azure/01-prerequisites-and-licensing.md) |
-| 1 | Secure test users and MFA | Microsoft Entra ID | [Step-by-step](02-azure/03-build-guide.md#phase-1---identity-and-admin-safety) |
-| 2 | Test context-aware access | Entra Conditional Access (P1+) | [MFA lab](labs/lab-01-conditional-access-mfa.md) |
-| 3 | Check device health | Intune + Conditional Access | [Device lab](labs/lab-02-device-compliance.md) |
-| 4 | Reduce permissions | Azure RBAC; optional PIM | [Least-privilege lab](labs/lab-03-least-privilege.md) |
-| 5 | Restrict network reachability | VNet, NSGs; optional Private Link | [Network lab](labs/lab-04-private-endpoint.md) |
-| 6 | Detect and validate | Entra logs, Azure Monitor; optional Sentinel | [Detection lab](labs/lab-05-logging-and-hunting.md) |
+| Service | What I'd use it for | Needed to start? |
+|---|---|---|
+| **Microsoft Entra ID** | User identities, authentication, groups, and roles | Yes |
+| **Entra Conditional Access** | Access rules based on users, apps, devices, and other signals | For policy-based access; generally requires P1 |
+| **Microsoft Intune** | Device enrollment, compliance, and management | Optional |
+| **Azure RBAC** | Limit access to Azure resources | Yes, for Azure resource permissions |
+| **Entra PIM** | Just-in-time privileged role activation | Optional; licensing applies |
+| **Azure Virtual Network and NSGs** | Network separation and traffic filtering | For network labs |
+| **Azure Private Link** | Reach supported Azure services through private endpoints | Optional; billed |
+| **Azure Monitor / Log Analytics** | Collect and investigate logs | Recommended; usage can cost money |
+| **Microsoft Defender for Cloud** | Cloud security posture and workload protection | Optional; paid plans vary |
+| **Microsoft Sentinel** | SIEM, detection rules, investigation, and hunting | Optional; ingestion and retention costs apply |
 
-### Azure notes and reference material
+### Build order
 
-- [Overview / lab plan](02-azure/00-azure-overview.md)
-- [Required vs optional products and costs](02-azure/01-prerequisites-and-licensing.md)
-- [Target Azure architecture](02-azure/02-target-architecture.md)
-- [Full build instructions](02-azure/03-build-guide.md)
-- [Services, security products, and alternatives](02-azure/04-services-and-tools.md)
-- [Test cases, expected results, and rollback](02-azure/05-validation-and-rollback.md)
-- [KQL detection and troubleshooting queries](02-azure/06-kql-examples.md)
+| Step | What I'm setting up | Guide |
+|---|---|---|
+| 1 | Test tenant, users, licensing, and admin recovery | [Prerequisites](02-azure/01-prerequisites-and-licensing.md) |
+| 2 | MFA and basic identity protection | [Build guide](02-azure/03-build-guide.md) |
+| 3 | Conditional Access with report-only testing | [Lab 01](labs/lab-01-conditional-access-mfa.md) |
+| 4 | Device compliance with Intune | [Lab 02](labs/lab-02-device-compliance.md) |
+| 5 | Least-privilege permissions using Azure RBAC | [Lab 03](labs/lab-03-least-privilege.md) |
+| 6 | VNet restrictions, Private Endpoint, and DNS | [Lab 04](labs/lab-04-private-endpoint.md) |
+| 7 | Logs, KQL queries, and security monitoring | [Lab 05](labs/lab-05-logging-and-hunting.md) |
 
-## 🧪 Hands-on labs
+### Azure study notes
 
-Complete the labs **in this order**. They are designed for a disposable test tenant or a dedicated pilot group—not for first-time changes across a production tenant.
+- [Azure overview and lab plan](02-azure/00-azure-overview.md)
+- [Licensing and prerequisites](02-azure/01-prerequisites-and-licensing.md)
+- [Target architecture](02-azure/02-target-architecture.md)
+- [Full setup guide](02-azure/03-build-guide.md)
+- [Services and tools](02-azure/04-services-and-tools.md)
+- [Testing and rollback](02-azure/05-validation-and-rollback.md)
+- [KQL examples](02-azure/06-kql-examples.md)
 
-- [Lab 01 — Report-only MFA Conditional Access](labs/lab-01-conditional-access-mfa.md)
-- [Lab 02 — Intune device compliance](labs/lab-02-device-compliance.md)
-- [Lab 03 — Read-only Azure RBAC](labs/lab-03-least-privilege.md)
-- [Lab 04 — Private Endpoint and DNS (paid / optional)](labs/lab-04-private-endpoint.md)
-- [Lab 05 — Zero Trust telemetry and hunting](labs/lab-05-logging-and-hunting.md)
+## Labs
 
-## ✅ Definition of success
+These labs are meant for a test tenant or a small pilot group, not for turning on new policies across a production tenant without testing.
 
-At the end, you should be able to:
+1. [Conditional Access and MFA](labs/lab-01-conditional-access-mfa.md)
+2. [Intune device compliance](labs/lab-02-device-compliance.md)
+3. [Azure RBAC and least privilege](labs/lab-03-least-privilege.md)
+4. [Private Endpoint and DNS](labs/lab-04-private-endpoint.md)
+5. [Logs and KQL hunting](labs/lab-05-logging-and-hunting.md)
 
-- Explain **NIST SP 800-207**, the Microsoft principles, and the CISA maturity pillars.
-- Explain why a trusted network location **does not equal** trusted identity.
-- Pilot a Conditional Access policy safely in **report-only** mode.
-- Show the difference between **authentication, authorization, network access, and monitoring**.
-- Validate a compliant vs noncompliant device scenario (when licensed).
-- Give a user a narrowly scoped Azure role rather than Owner/Contributor unnecessarily.
-- Explain why Private Link still needs correct DNS and RBAC.
-- Find evidence in Entra sign-in logs and Azure resource logs.
+## What I want to understand by the end
 
-Use the [Implementation checklist](templates/implementation-checklist.md) and [Learning journal](templates/learning-journal.md) to track progress.
+- Explain Zero Trust without treating it as just MFA or a VPN.
+- Understand the NIST, Microsoft, and CISA models.
+- Build and test a Conditional Access policy without locking out administrators.
+- Understand the difference between authentication, authorization, and network access.
+- Check device compliance and see how it affects access.
+- Assign narrowly scoped roles in Azure.
+- Set up and troubleshoot Private Endpoint connectivity and DNS.
+- Use Entra sign-in logs, Azure logs, and KQL to validate the controls.
 
-## 🧯 Safety and cost warnings
+I'll use the [implementation checklist](templates/implementation-checklist.md) and [learning journal](templates/learning-journal.md) to track what I've tested and what still needs work.
 
-- Never test broad deny/MFA/device policies across **All users** without designated emergency-access accounts, exclusions, report-only testing, and a rollback plan.
-- **Security defaults** and **enabled Conditional Access policies** are alternative approaches. Learn the migration path before changing this setting.
-- Entra Conditional Access generally requires **Entra ID P1**; risk-based policies require **P2**. Intune, PIM, Sentinel, private endpoints, and Azure workloads have separate eligibility or cost considerations.
-- Azure subscriptions can accrue charges even in a learning lab. Set a budget, use pilot scopes, and delete unused resources.
-- Never commit credentials, tenant secrets, access tokens, log samples containing PII, or internal IPs into a public repo.
+## Things to watch out for
 
-## 📚 Reference material
+- Test Conditional Access in **report-only** mode first and keep emergency-access accounts available. Plan exclusions and rollback before enforcement.
+- Understand the difference between **Security defaults** and **Conditional Access** before changing tenant-wide settings.
+- Conditional Access generally requires **Entra ID P1**. Risk-based access policies generally require **P2**. Intune, PIM, Sentinel, and other services may have separate licensing or charges.
+- Set a budget for Azure labs and clean up resources when they're no longer needed.
+- Don't upload passwords, tokens, secrets, personal sign-in data, or internal configuration details to a public GitHub repository.
 
-Documentation links: [References](docs/references.md) • Terms: [Glossary](docs/glossary.md)
+## References
 
+- [Microsoft and NIST references](docs/references.md)
+- [Glossary](docs/glossary.md)
+
+This is a working set of study notes. I'll keep updating it as I test the labs and learn more.
