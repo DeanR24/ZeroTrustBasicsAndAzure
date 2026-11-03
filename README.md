@@ -1,4 +1,4 @@
-# ZeroTrustArchetecture
+# Zero Trust Architecture
 
 ![Topics](https://img.shields.io/badge/Topics-Zero%20Trust%20%7C%20Azure%20%7C%20Entra%20ID-2563eb)
 
