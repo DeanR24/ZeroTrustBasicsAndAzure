@@ -88,7 +88,7 @@ This is a simplified view, not a literal network traffic flow. Conditional Acces
 
 ### Build order
 
-| Step | What I'm setting up | Guide |
+| Step | What I'm setting up 
 |---|---|---|
 | 1 | Test tenant, users, licensing, and admin recovery 
 | 2 | MFA and basic identity protection 
