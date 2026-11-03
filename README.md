@@ -1,8 +1,6 @@
 # ZeroTrustArchetecture
 
 ![Topics](https://img.shields.io/badge/Topics-Zero%20Trust%20%7C%20Azure%20%7C%20Entra%20ID-2563eb)
-![Level](https://img.shields.io/badge/Level-Beginner%20to%20Intermediate-16a34a)
-![Type](https://img.shields.io/badge/Type-Learning%20Notes%20%2B%20Hands--On%20Labs-64748b)
 
 This repository is my structured learning notebook for Zero Trust architecture. It explains the **why** in plain English first, then the **how** using Microsoft Entra ID, Microsoft Intune, Azure infrastructure, Microsoft Defender, and Microsoft Sentinel.
 
